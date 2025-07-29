@@ -41,7 +41,7 @@ data['ssn'] = st.text_input("SSN (Last 4)")
 import datetime
 data['dob'] = st.date_input(
     "Date of Birth",
-    min_value=datetime.date(1, 1, 1900),
+    min_value=datetime.date(1900, 1, 1),
     max_value=datetime.date.today()
 )
 data['exam_date'] = st.date_input("Date of Exam")
