@@ -13,7 +13,7 @@ def ai_generate(section_name, notes):
         f"paragraph for the '{section_name}' section of a DDS report based on the following notes:\n\n{notes}"
     )
     response = client.chat.completions.create(
-        model="gpt-4-0613",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You write Social Security Disability consultative exam reports."},
             {"role": "user", "content": prompt}
