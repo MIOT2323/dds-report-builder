@@ -1,18 +1,18 @@
 import streamlit as st
 import datetime
-import openai
+from openai import OpenAI
 from docx import Document
 from docx.shared import Pt
 
-# Initialize OpenAI API key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Initialize OpenAI Client
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 def ai_generate(section_name, notes):
     prompt = (
         f"You are an experienced disability examiner. Write a concise, professional "
         f"paragraph for the '{section_name}' section of a DDS report based on the following notes:\n\n{notes}"
     )
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You write Social Security Disability consultative exam reports."},
@@ -64,47 +64,26 @@ data['exam_date'] = st.date_input("Date of Exam")
 data['chief_complaint'] = st.text_area("Chief Complaint")
 
 # Notes and GPT generation for each major section
-data['hpi_notes'] = st.text_area("HPI Notes")
-if st.button("Draft HPI"):
-    data['hpi'] = ai_generate("History of Present Illness", data['hpi_notes'])
-data['hpi'] = st.text_area("HPI Paragraph", value=data.get('hpi', ''))
+for section_key, section_label in [
+    ("hpi", "History of Present Illness"),
+    ("pmh", "Past Medical History"),
+    ("social", "Social History"),
+    ("family", "Family History"),
+    ("adl", "Activities of Daily Living"),
+    ("exam", "Physical Exam Findings"),
+    ("assessment", "Assessment and Impressions"),
+    ("capacity", "Functional Capacity")
+]:
+    notes_key = section_key + '_notes'
+    data[notes_key] = st.text_area(f"{section_label} Notes")
+    if st.button(f"Draft {section_label}"):
+        data[section_key] = ai_generate(section_label, data[notes_key])
+    data[section_key] = st.text_area(section_label, value=data.get(section_key, ''))
 
-data['pmh_notes'] = st.text_area("PMH Notes")
-if st.button("Draft PMH"):
-    data['pmh'] = ai_generate("Past Medical History", data['pmh_notes'])
-data['pmh'] = st.text_area("Past Medical History", value=data.get('pmh', ''))
-
-data['social_notes'] = st.text_area("Social History Notes")
-if st.button("Draft Social History"):
-    data['social'] = ai_generate("Social History", data['social_notes'])
-data['social'] = st.text_area("Social History", value=data.get('social', ''))
-
-data['family_notes'] = st.text_area("Family History Notes")
-if st.button("Draft Family History"):
-    data['family'] = ai_generate("Family History", data['family_notes'])
-data['family'] = st.text_area("Family History", value=data.get('family', ''))
-
-data['adl_notes'] = st.text_area("ADL Notes")
-if st.button("Draft ADL"):
-    data['adl'] = ai_generate("Activities of Daily Living", data['adl_notes'])
-data['adl'] = st.text_area("Activities of Daily Living", value=data.get('adl', ''))
-
+# Vitals
 data['vitals'] = st.text_area("Vitals")
-data['exam_notes'] = st.text_area("Exam Findings Notes")
-if st.button("Draft Physical Exam"):
-    data['exam'] = ai_generate("Physical Exam Findings", data['exam_notes'])
-data['exam'] = st.text_area("Physical Exam Findings", value=data.get('exam', ''))
 
-data['assessment_notes'] = st.text_area("Assessment Notes")
-if st.button("Draft Assessment"):
-    data['assessment'] = ai_generate("Assessment and Impressions", data['assessment_notes'])
-data['assessment'] = st.text_area("Assessment", value=data.get('assessment', ''))
-
-data['capacity_notes'] = st.text_area("Functional Capacity Notes")
-if st.button("Draft Functional Capacity"):
-    data['capacity'] = ai_generate("Functional Capacity", data['capacity_notes'])
-data['capacity'] = st.text_area("Functional Capacity", value=data.get('capacity', ''))
-
+# Report Generation
 if st.button("Generate Word Document"):
     file = generate_report(data)
     with open(file, "rb") as f:
