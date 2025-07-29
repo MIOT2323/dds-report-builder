@@ -11,7 +11,9 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 def ai_generate(section_name, notes):
     prompt = (
         f"You are an experienced disability examiner. Write a concise, professional "
-        f"paragraph for the '{section_name}' section of a DDS report based on the following notes:\n\n{notes}"
+        f"paragraph for the '{section_name}' section of a DDS report based on the following notes:
+
+{notes}"
     )
     try:
         response = client.chat.completions.create(
@@ -24,8 +26,11 @@ def ai_generate(section_name, notes):
             max_tokens=300
         )
         return response.choices[0].message.content.strip()
-    except openai.error.RateLimitError:
-        st.error("Rate limit exceeded. Please wait a moment and try again.")
+    except Exception as e:
+        if hasattr(e, 'status') and e.status == 429:
+            st.error("Rate limit exceeded. Please wait a moment and try again.")
+        else:
+            st.error(f"Error generating {section_name}: {e}")
         return ""
 
 
