@@ -9,12 +9,12 @@ from docx.shared import Pt
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 def ai_generate(section_name, notes):
-    prompt = (
-        f"You are an experienced disability examiner. Write a concise, professional "
-        f"paragraph for the '{section_name}' section of a DDS report based on the following notes:
+    # Build a triple-quoted prompt string to avoid syntax errors
+    prompt = f"""
+You are an experienced disability examiner. Write a concise, professional paragraph for the '{section_name}' section of a DDS report based on the following notes:
 
-{notes}"
-    )
+{notes}
+"""
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -27,6 +27,7 @@ def ai_generate(section_name, notes):
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
+        # Handle rate limit and other errors gracefully
         if hasattr(e, 'status') and e.status == 429:
             st.error("Rate limit exceeded. Please wait a moment and try again.")
         else:
