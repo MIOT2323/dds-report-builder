@@ -127,15 +127,24 @@ for key, label in sections:
 
 # Physical exam inputs
 st.subheader('Physical Examination Details')
-data['general_observations'] = st.text_area('General Observations')
-data['vitals'] = st.text_area('Vitals - BP, Pulse, Height, Weight, Vision (corrected or non-corrected) Right - Left - Both')
-data['heent'] = st.text_area('HEENT')
-data['respiratory'] = st.text_area('Respiratory')
-data['cardiac'] = st.text_area('Cardiac')
-data['digestive'] = st.text_area('Digestive')
-data['upper_extremities'] = st.text_area('Upper Extremities')
-data['lower_extremities'] = st.text_area('Lower Extremities')
-data['spines'] = st.text_area('Cervical and Thoracic Spines')
+phy_fields = [
+    ('general_observations','General Observations'),
+    ('vitals','Vitals - BP, Pulse, Height, Weight, Vision (corrected or non-corrected) Right - Left - Both'),
+    ('heent','HEENT'),
+    ('respiratory','Respiratory'),
+    ('cardiac','Cardiac'),
+    ('digestive','Digestive'),
+    ('upper_extremities','Upper Extremities'),
+    ('lower_extremities','Lower Extremities'),
+    ('spines','Cervical and Thoracic Spines'),
+]
+for key, label in phy_fields:
+    st.session_state.setdefault(f'{key}_notes', '')
+    st.session_state.setdefault(key, '')
+    st.text_area(f'{label} Notes', key=f'{key}_notes')
+    if st.button(f'Draft {label}', key=f'btn_{key}'):
+        st.session_state[key] = ai_generate(label, st.session_state[f'{key}_notes'])
+    data[key] = st.text_area(label, key=key)
 
 # Remaining sections
 remaining = [
