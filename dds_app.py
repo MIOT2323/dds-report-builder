@@ -85,8 +85,8 @@ sections = [
     ('hpi','History of Present Illness - Onset, diagnosis, treatment, medication, current status, pain severity, conditional items'),
     ('pmh','Past Medical History Notes - list of past medical history'),
     ('social','Social History - relationship status, living situation, children, employment status, support from family or friends, alcohol, tobacco or drug use'),
-    ('family','Family History'),
-    ('adl','Activities of Daily Living'),
+    ('family','Family History - List of conditions known to run in family'),
+    ('adl','Activities of Daily Living - Wake up, Bed Time, Chores, Daily Life'),
     ('exam','Physical Exam Findings'),
     ('assessment','Assessment and Impressions'),
     ('capacity','Functional Functional Capacity')
