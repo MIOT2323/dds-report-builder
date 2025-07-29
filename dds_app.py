@@ -38,7 +38,15 @@ st.title("DDS Exam Report Builder")
 data = {}
 data['name'] = st.text_input("Full Name")
 data['ssn'] = st.text_input("SSN (Last 4)")
-data['dob'] = st.date_input("Date of Birth")
+import datetime
+
+# …
+
+data['dob'] = st.date_input(
+    "Date of Birth",
+    min_value=datetime.date(1, 1, 1900),
+    max_value=datetime.date.today()
+)
 data['exam_date'] = st.date_input("Date of Exam")
 data['chief_complaint'] = st.text_area("Chief Complaint", help="Align with DDS if provided.")
 data['hpi'] = st.text_area("History of Present Illness")
