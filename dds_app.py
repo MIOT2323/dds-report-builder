@@ -150,7 +150,7 @@ for key, label in remaining:
     st.text_area(f'{label} Notes', key=f'{key}_notes')
     if st.button(f'Draft {label}', key=f'btn_{key}'):
         st.session_state[key] = ai_generate(label, st.session_state[f'{key}_notes'])
-    data[key] = st.text_area(label, value=st.session_state[key], key=key)
+    data[key] = st.text_area(label, key=key)
 
 # Generate report button
 if st.button('Generate Word Document'):
