@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDS Exam Report Entry</title>
+  <style>
+    body { font-family: 'Times New Roman', serif; padding: 20px; max-width: 800px; margin: auto; }
+    h1, h2 { font-weight: bold; color: black; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, textarea, select { width: 100%; padding: 6px; margin-top: 5px; font-size: 14px; }
+    .section { margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px; }
+    button { margin-top: 30px; padding: 10px 20px; font-size: 16px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>DDS Consultative Exam Entry</h1>
+
+  <div class="section">
+    <h2>Examiner Identification</h2>
+    <label for="examinerName">Examiner Name:</label>
+    <input type="text" id="examinerName" name="examinerName">
+
+    <label for="examinerId">Examiner ID or Initials:</label>
+    <input type="text" id="examinerId" name="examinerId">
+  </div>
+
+  <div class="section">
+    <h2>Patient Information</h2>
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" name="name">
+
+    <label for="ssn">SSN (Last 4):</label>
+    <input type="text" id="ssn" name="ssn">
+
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob" name="dob" min="1900-01-01" max="2025-07-29">
+
+    <label for="examDate">Date of Exam:</label>
+    <input type="date" id="examDate" name="examDate">
+  </div>
+
+  <div class="section">
+    <h2>Chief Complaint</h2>
+    <label for="chiefComplaint">Enter the primary concern(s):</label>
+    <textarea id="chiefComplaint" name="chiefComplaint" rows="3"></textarea>
+    <small>Note: DDS often provides this in the file — match it where applicable.</small>
+  </div>
+
+  <div class="section">
+    <h2>History of Present Illness</h2>
+    <label for="hpi">Describe onset, treatment, and functional impact:</label>
+    <textarea id="hpi" name="hpi" rows="5"></textarea>
+  </div>
+
+  <div class="section">
+    <h2>Past Medical History</h2>
+    <label for="pmh">List past diagnoses, surgeries, injuries:</label>
+    <textarea id="pmh" name="pmh" rows="4"></textarea>
+  </div>
+
+  <div class="section">
+    <h2>Social & Family History</h2>
+    <label for="socialHistory">Social Situation:</label>
+    <textarea id="socialHistory" name="socialHistory" rows="3"></textarea>
+
+    <label for="familyHistory">Family History (if any):</label>
+    <textarea id="familyHistory" name="familyHistory" rows="2"></textarea>
+  </div>
+
+  <div class="section">
+    <h2>Activities of Daily Living</h2>
+    <label for="adl">Describe the patient's daily function and routine:</label>
+    <textarea id="adl" name="adl" rows="4"></textarea>
+  </div>
+
+  <div class="section">
+    <h2>Physical Examination</h2>
+    <label for="vitals">Vitals (BP, Pulse, Temp, etc.):</label>
+    <textarea id="vitals" name="vitals" rows="2"></textarea>
+
+    <label for="examFindings">Exam Findings (Strength, ROM, Neurological, etc.):</label>
+    <textarea id="examFindings" name="examFindings" rows="4"></textarea>
+  </div>
+
+  <div class="section">
+    <h2>Assessment & Functional Capacity</h2>
+    <label for="assessment">Medical Impressions:</label>
+    <textarea id="assessment" name="assessment" rows="4"></textarea>
+
+    <label for="capacity">Functional Limitations:</label>
+    <textarea id="capacity" name="capacity" rows="3"></textarea>
+  </div>
+
+  <button type="submit">Generate DDS Report</button>
+
+  <script>
+    // Autosave functionality using localStorage
+    const autosaveFields = ['examinerName', 'examinerId', 'name', 'ssn', 'dob', 'examDate', 'chiefComplaint', 'hpi', 'pmh', 'socialHistory', 'familyHistory', 'adl', 'vitals', 'examFindings', 'assessment', 'capacity'];
+
+    autosaveFields.forEach(id => {
+      const field = document.getElementById(id);
+      if (localStorage.getItem(id)) {
+        field.value = localStorage.getItem(id);
+      }
+      field.addEventListener('input', () => {
+        localStorage.setItem(id, field.value);
+      });
+    });
+
+    // Prompt to expand vague answers
+    const checkDetailPrompt = (id, labelText) => {
+      const field = document.getElementById(id);
+      const minLength = 30;
+      field.addEventListener('blur', () => {
+        let promptId = id + 'Prompt';
+        let existing = document.getElementById(promptId);
+        if (field.value.trim().length < minLength && !existing) {
+          const warn = document.createElement('div');
+          warn.id = promptId;
+          warn.style.color = 'red';
+          warn.style.marginTop = '5px';
+          warn.innerText = `\u26A0 Please expand on this section. Consider describing how the condition affects the patient's daily function, treatment history, or limitations.`;
+          field.parentNode.appendChild(warn);
+        } else if (field.value.trim().length >= minLength && existing) {
+          existing.remove();
+        }
+      });
+    };
+
+    ['chiefComplaint', 'hpi', 'pmh', 'adl', 'examFindings', 'assessment'].forEach(id => checkDetailPrompt(id));
+  </script>
+</body>
+</html>
